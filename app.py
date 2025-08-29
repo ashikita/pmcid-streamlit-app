@@ -11,7 +11,10 @@ tool = st.secrets["api"]["tool"]
 
 # Streamlit UI
 st.title("DOI → PMID/PMCID 変換ツール (PMC ID Converter API)")
-st.write("TSV形式のDOIリストをアップロードしてください。最大1000件まで対応しています。")
+st.write(
+    "TSV形式のDOIリストをアップロードしてください。最大1000件まで対応しています。"
+    "ファイル形式は **[index]<TAB>[DOI]** の構成である必要があります。"
+)
 
 uploaded_file = st.file_uploader("DOIリストファイルをアップロード (TSV形式)", type=["tsv", "txt"])
 
@@ -22,7 +25,7 @@ if uploaded_file:
     content = uploaded_file.read().decode("utf-8")
     lines = content.strip().split("\n")
     doi_list = [line.split("\t") for line in lines]
-    doi_list = [(int(index), doi.strip()) for index, doi in doi_list]  # DOIをstripで整形
+    doi_list = [(int(index), doi.strip()) for index, doi in doi_list]
 
     results = []
 
@@ -32,7 +35,6 @@ if uploaded_file:
         ids_param = ",".join(dois)
 
         url = f"https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles/?tool={tool}&email={email}&ids={ids_param}&format=json"
-        batch_start = datetime.now()
         response = requests.get(url)
         time.sleep(0.5)
 
@@ -48,15 +50,11 @@ if uploaded_file:
             pmcid = record.get("pmcid", "N/A") if record else "N/A"
             results.append((index, doi, pmid, pmcid))
 
-        batch_end = datetime.now()
-        elapsed = (batch_end - batch_start).total_seconds()
-        st.info(f"{i + len(batch)} 件処理完了（所要時間: {elapsed:.2f}秒）")
-
     total_elapsed = (datetime.now() - start_time).total_seconds()
     st.success(f"処理完了（全体所要時間: {total_elapsed:.2f}秒）")
 
     df = pd.DataFrame(results, columns=["index", "doi", "pmid", "pmcid"])
-    df["doi"] = df["doi"].str.strip()  # 念のため再度整形
+    df["doi"] = df["doi"].str.strip()
     st.dataframe(df)
 
     tsv_buffer = io.StringIO()
