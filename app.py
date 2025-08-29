@@ -13,7 +13,7 @@ tool = st.secrets["api"]["tool"]
 st.title("DOI → PMID/PMCID 変換ツール (PMC ID Converter API)")
 st.write(
     "TSV形式のDOIリストをアップロードしてください。最大1000件まで対応しています。"
-    "ファイル形式は **[index]<TAB>[DOI]** の構成である必要があります。"
+    "ファイル形式は **[index]<TAB>[DOI]** の構成としてください。"
 )
 
 uploaded_file = st.file_uploader("DOIリストファイルをアップロード (TSV形式)", type=["tsv", "txt"])
@@ -67,3 +67,4 @@ if uploaded_file:
         file_name="pmcid_results.tsv",
         mime="text/tab-separated-values"
     )
+
