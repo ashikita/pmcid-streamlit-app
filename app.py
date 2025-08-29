@@ -45,11 +45,11 @@ if uploaded_file:
         for index, doi in batch:
             record = records.get(doi.lower())
             if record:
-                pmid = record.get("pmid", "#ERROR#")
-                pmcid = record.get("pmcid", "#ERROR#")
+                pmid = record.get("pmid", "N/A")
+                pmcid = record.get("pmcid", "N/A")
             else:
-                pmid = "#ERROR#"
-                pmcid = "#ERROR#"
+                pmid = "N/A"
+                pmcid = "N/A"
             results.append((index, doi, pmid, pmcid))
 
         batch_end = datetime.now()
